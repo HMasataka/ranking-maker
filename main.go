@@ -4,6 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/HMasataka/ranking-maker/application/usecase"
+	"github.com/HMasataka/ranking-maker/infrastructure/persistence"
+	tx "github.com/HMasataka/transactor/redis"
+
 	"github.com/redis/go-redis/v9"
 )
 
@@ -19,6 +23,21 @@ func NewRedisClient() *redis.Client {
 
 func main() {
 	client := NewRedisClient()
-	res := client.Ping(context.Background())
+	ctx := context.Background()
+
+	connection := tx.NewConnectionProvider(client)
+	clientProvider := tx.NewClientProvider(connection)
+	scoreRepository := persistence.NewScoreRepository(clientProvider)
+	u := usecase.NewScoreUseCase(connection, scoreRepository)
+
+	err := u.Increment(ctx, "key", "member1")
+	if err != nil {
+		panic(err)
+	}
+
+	res, err := u.Count(ctx, "key")
+	if err != nil {
+		panic(err)
+	}
 	fmt.Printf("%+v", res)
 }
