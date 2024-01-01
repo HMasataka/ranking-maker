@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7-alpine
+    platform: linux/arm64
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-network
+networks:
+  redis-network:
+    driver: bridge
