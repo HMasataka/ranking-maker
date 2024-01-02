@@ -30,22 +30,21 @@ func NewScoreUseCase(
 }
 
 func (c *scoreUseCase) Count(ctx context.Context, key string, expired time.Duration) (int64, error) {
-	var res int64
+	var count int64
 
 	if err := c.redisTransactor.Required(ctx, func(ctx context.Context) error {
-		count, err := c.scoreRepository.Count(ctx, key, expired)
+		var err error
+		count, err = c.scoreRepository.Count(ctx, key, expired)
 		if err != nil {
 			return err
 		}
 
-		res = count
-
 		return nil
 	}); err != nil {
-		return res, err
+		return count, err
 	}
 
-	return res, nil
+	return count, nil
 }
 
 func (c *scoreUseCase) Increment(ctx context.Context, key, member string) error {
