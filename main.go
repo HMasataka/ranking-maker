@@ -31,7 +31,7 @@ func main() {
 	scoreRepository := persistence.NewScoreRepository(clientProvider)
 	u := usecase.NewScoreUseCase(connection, scoreRepository)
 
-	err := u.Increment(ctx, "key", "member1")
+	err := u.Add(ctx, "key", "member1")
 	if err != nil {
 		panic(err)
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 type ScoreUseCase interface {
-	Increment(ctx context.Context, key, member string) error
+	Add(ctx context.Context, key, member string) error
 	Count(ctx context.Context, key string, expired time.Duration) (int64, error)
 }
 
@@ -47,8 +47,8 @@ func (c *scoreUseCase) Count(ctx context.Context, key string, expired time.Durat
 	return count, nil
 }
 
-func (c *scoreUseCase) Increment(ctx context.Context, key, member string) error {
+func (c *scoreUseCase) Add(ctx context.Context, key, member string) error {
 	return c.redisTransactor.Required(ctx, func(ctx context.Context) error {
-		return c.scoreRepository.Increment(ctx, key, member)
+		return c.scoreRepository.Add(ctx, key, member)
 	})
 }

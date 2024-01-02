@@ -32,7 +32,7 @@ func (s *scoreRepository) Count(ctx context.Context, key string, expired time.Du
 	return reader.ZCount(ctx, s.getKey(key), fmt.Sprintf("%d", ex), "+inf").Result()
 }
 
-func (s *scoreRepository) Increment(ctx context.Context, key, member string) error {
+func (s *scoreRepository) Add(ctx context.Context, key, member string) error {
 	_, writer := s.clientProvider.CurrentClient(ctx)
 
 	return writer.ZAdd(ctx, s.getKey(key), redis.Z{
