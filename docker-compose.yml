@@ -8,6 +8,14 @@ services:
       - "6379:6379"
     networks:
       - redis-network
+  wire:
+    build:
+      context: tools/di
+      dockerfile: Dockerfile
+    working_dir: /worker
+    volumes:
+      - .:/worker
+    command: ["/worker/tools/di/entrypoint.sh"]
 networks:
   redis-network:
     driver: bridge

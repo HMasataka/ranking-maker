@@ -5,31 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/HMasataka/ranking-maker/application/usecase"
-	"github.com/HMasataka/ranking-maker/infrastructure/persistence"
-	tx "github.com/HMasataka/transactor/redis"
-
-	"github.com/redis/go-redis/v9"
+	"github.com/HMasataka/ranking-maker/di"
 )
 
-func NewRedisClient() *redis.Client {
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", "localhost", 6379),
-		Password: "",
-		DB:       0,
-	})
-
-	return redisClient
-}
-
 func main() {
-	client := NewRedisClient()
 	ctx := context.Background()
 
-	connection := tx.NewConnectionProvider(client)
-	clientProvider := tx.NewClientProvider(connection)
-	scoreRepository := persistence.NewScoreRepository(clientProvider)
-	u := usecase.NewScoreUseCase(connection, scoreRepository)
+	u := di.InitializeScoreService()
 
 	err := u.Add(ctx, "key", "member1")
 	if err != nil {
