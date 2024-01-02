@@ -11,7 +11,7 @@ import (
 
 type ScoreUseCase interface {
 	Increment(ctx context.Context, key, member string) error
-	Count(ctx context.Context, key string) (int64, error)
+	Count(ctx context.Context, key string, expired time.Duration) (int64, error)
 }
 
 type scoreUseCase struct {
@@ -29,11 +29,11 @@ func NewScoreUseCase(
 	}
 }
 
-func (c *scoreUseCase) Count(ctx context.Context, key string) (int64, error) {
+func (c *scoreUseCase) Count(ctx context.Context, key string, expired time.Duration) (int64, error) {
 	var res int64
 
 	if err := c.redisTransactor.Required(ctx, func(ctx context.Context) error {
-		count, err := c.scoreRepository.Count(ctx, key, time.Hour)
+		count, err := c.scoreRepository.Count(ctx, key, expired)
 		if err != nil {
 			return err
 		}

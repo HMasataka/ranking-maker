@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/HMasataka/ranking-maker/application/usecase"
 	"github.com/HMasataka/ranking-maker/infrastructure/persistence"
@@ -35,7 +36,7 @@ func main() {
 		panic(err)
 	}
 
-	res, err := u.Count(ctx, "key")
+	res, err := u.Count(ctx, "key", time.Hour)
 	if err != nil {
 		panic(err)
 	}
