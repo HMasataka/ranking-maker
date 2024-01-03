@@ -14,6 +14,17 @@ import (
 	"github.com/HMasataka/transactor/redis"
 )
 
+// Injectors from rank.wire.go:
+
+func InitializeRankService(cfg *config.RedisConfig) service.RankService {
+	client := infrastructure.NewRedisClient(cfg)
+	connectionProvider := redis.NewConnectionProvider(client)
+	clientProvider := redis.NewClientProvider(connectionProvider)
+	rankRepository := persistence.NewRankRepository(clientProvider)
+	rankService := service.NewRankService(connectionProvider, rankRepository)
+	return rankService
+}
+
 // Injectors from score.wire.go:
 
 func InitializeScoreService(cfg *config.RedisConfig) service.ScoreService {
