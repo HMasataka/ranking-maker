@@ -7,6 +7,7 @@
 package di
 
 import (
+	"github.com/HMasataka/config"
 	"github.com/HMasataka/ranking-maker/domain/service"
 	"github.com/HMasataka/ranking-maker/infrastructure"
 	"github.com/HMasataka/ranking-maker/infrastructure/persistence"
@@ -15,8 +16,8 @@ import (
 
 // Injectors from score.wire.go:
 
-func InitializeScoreService() service.ScoreService {
-	client := infrastructure.NewRedisClient()
+func InitializeScoreService(cfg *config.RedisConfig) service.ScoreService {
+	client := infrastructure.NewRedisClient(cfg)
 	connectionProvider := redis.NewConnectionProvider(client)
 	clientProvider := redis.NewClientProvider(connectionProvider)
 	scoreRepository := persistence.NewScoreRepository(clientProvider)

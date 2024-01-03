@@ -5,16 +5,21 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/HMasataka/config"
 	"github.com/HMasataka/ranking-maker/di"
 )
 
 func main() {
 	ctx := context.Background()
 
-	u := di.InitializeScoreService()
-
-	err := u.Add(ctx, "key", "member1")
+	cfg, err := config.NewRedisConfig()
 	if err != nil {
+		panic(err)
+	}
+
+	u := di.InitializeScoreService(cfg)
+
+	if err := u.Add(ctx, "key", "member"); err != nil {
 		panic(err)
 	}
 
