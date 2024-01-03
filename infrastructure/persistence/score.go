@@ -40,3 +40,8 @@ func (s *scoreRepository) Add(ctx context.Context, key string, member any) error
 		Member: member,
 	}).Err()
 }
+
+func (s *scoreRepository) RemoveOlder(ctx context.Context, key string, expired time.Duration) error {
+	_, writer := s.clientProvider.CurrentClient(ctx)
+	return writer.ZRemRangeByScore(ctx, s.getKey(key), "-inf", fmt.Sprintf("%v", expired)).Err()
+}
