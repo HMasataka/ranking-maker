@@ -9,7 +9,7 @@ import (
 )
 
 type ScoreService interface {
-	Add(ctx context.Context, key, member string) error
+	Add(ctx context.Context, key string, member any) error
 	Count(ctx context.Context, key string, expired time.Duration) (int64, error)
 }
 
@@ -30,6 +30,6 @@ func (c *scoreService) Count(ctx context.Context, key string, expired time.Durat
 	return c.scoreRepository.Count(ctx, key, expired)
 }
 
-func (c *scoreService) Add(ctx context.Context, key, member string) error {
+func (c *scoreService) Add(ctx context.Context, key string, member any) error {
 	return c.scoreRepository.Add(ctx, key, member)
 }
