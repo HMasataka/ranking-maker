@@ -8,41 +8,26 @@ package di
 
 import (
 	"github.com/HMasataka/config"
+	"github.com/HMasataka/ranking-maker/application/usecase"
 	"github.com/HMasataka/ranking-maker/domain/service"
 	"github.com/HMasataka/ranking-maker/infrastructure"
 	"github.com/HMasataka/ranking-maker/infrastructure/persistence"
 	"github.com/HMasataka/transactor/redis"
 )
 
-// Injectors from queue.wire.go:
+// Injectors from aggregate.wire.go:
 
-func InitializeQueueService(cfg *config.RedisConfig) service.QueueService {
+func InitializeAggregateUseCase(cfg *config.RedisConfig) usecase.AggregateUseCase {
 	client := infrastructure.NewRedisClient(cfg)
 	connectionProvider := redis.NewConnectionProvider(client)
-	clientProvider := redis.NewClientProvider(connectionProvider)
-	queueRepository := persistence.NewQueueRepository(clientProvider)
-	queueService := service.NewQueueService(connectionProvider, queueRepository)
-	return queueService
-}
-
-// Injectors from rank.wire.go:
-
-func InitializeRankService(cfg *config.RedisConfig) service.RankService {
-	client := infrastructure.NewRedisClient(cfg)
-	connectionProvider := redis.NewConnectionProvider(client)
-	clientProvider := redis.NewClientProvider(connectionProvider)
-	rankRepository := persistence.NewRankRepository(clientProvider)
-	rankService := service.NewRankService(connectionProvider, rankRepository)
-	return rankService
-}
-
-// Injectors from score.wire.go:
-
-func InitializeScoreService(cfg *config.RedisConfig) service.ScoreService {
-	client := infrastructure.NewRedisClient(cfg)
-	connectionProvider := redis.NewConnectionProvider(client)
+	transactor := redis.NewTransactor(connectionProvider)
 	clientProvider := redis.NewClientProvider(connectionProvider)
 	scoreRepository := persistence.NewScoreRepository(clientProvider)
 	scoreService := service.NewScoreService(connectionProvider, scoreRepository)
-	return scoreService
+	rankRepository := persistence.NewRankRepository(clientProvider)
+	rankService := service.NewRankService(connectionProvider, rankRepository)
+	queueRepository := persistence.NewQueueRepository(clientProvider)
+	queueService := service.NewQueueService(connectionProvider, queueRepository)
+	aggregateUseCase := usecase.NewAggregateUseCase(transactor, scoreService, rankService, queueService)
+	return aggregateUseCase
 }

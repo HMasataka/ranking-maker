@@ -10,4 +10,5 @@ var RedisClient = wire.NewSet(
 	infrastructure.NewRedisClient,
 	redis.NewConnectionProvider,
 	redis.NewClientProvider,
+	redis.NewTransactor,
 )
