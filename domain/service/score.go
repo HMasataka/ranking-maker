@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/HMasataka/ranking-maker/domain/repository"
-	"github.com/HMasataka/transactor/redis"
 )
 
 type ScoreService interface {
@@ -18,7 +17,6 @@ type scoreService struct {
 }
 
 func NewScoreService(
-	redisConnectionProvider redis.ConnectionProvider,
 	scoreRepository repository.ScoreRepository,
 ) ScoreService {
 	return &scoreService{

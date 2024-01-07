@@ -23,11 +23,11 @@ func InitializeAggregateUseCase(cfg *config.RedisConfig) usecase.AggregateUseCas
 	transactor := redis.NewTransactor(connectionProvider)
 	clientProvider := redis.NewClientProvider(connectionProvider)
 	scoreRepository := persistence.NewScoreRepository(clientProvider)
-	scoreService := service.NewScoreService(connectionProvider, scoreRepository)
+	scoreService := service.NewScoreService(scoreRepository)
 	rankRepository := persistence.NewRankRepository(clientProvider)
-	rankService := service.NewRankService(connectionProvider, rankRepository)
+	rankService := service.NewRankService(rankRepository)
 	queueRepository := persistence.NewQueueRepository(clientProvider)
-	queueService := service.NewQueueService(connectionProvider, queueRepository)
+	queueService := service.NewQueueService(queueRepository)
 	aggregateUseCase := usecase.NewAggregateUseCase(transactor, scoreService, rankService, queueService)
 	return aggregateUseCase
 }

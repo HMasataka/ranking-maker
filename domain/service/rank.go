@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/HMasataka/ranking-maker/domain/repository"
-	tx "github.com/HMasataka/transactor/redis"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -18,7 +17,6 @@ type rankService struct {
 }
 
 func NewRankService(
-	redisConnectionProvider tx.ConnectionProvider,
 	rankRepository repository.RankRepository,
 ) RankService {
 	return &rankService{

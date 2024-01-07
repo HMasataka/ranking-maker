@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"github.com/HMasataka/config"
 	"github.com/HMasataka/ranking-maker/di"
@@ -39,8 +40,7 @@ func main() {
 
 	usecase := di.InitializeAggregateUseCase(cfg)
 
-	err = usecase.Execute(ctx, args.Key)
-	if err != nil {
+	if err := usecase.Execute(ctx, args.Key, time.Duration(args.Duration)); err != nil {
 		log.Fatal().Err(err).Send()
 	}
 }

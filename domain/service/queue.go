@@ -4,12 +4,11 @@ import (
 	"context"
 
 	"github.com/HMasataka/ranking-maker/domain/repository"
-	tx "github.com/HMasataka/transactor/redis"
 )
 
 type QueueService interface {
 	Push(ctx context.Context, key string, members ...any) error
-	Pop(ctx context.Context, key string, count int) ([]string, error)
+	Pop(ctx context.Context, key string, count int64) ([]string, error)
 	Len(ctx context.Context, key string) (int64, error)
 }
 
@@ -18,7 +17,6 @@ type queueService struct {
 }
 
 func NewQueueService(
-	redisConnectionProvider tx.ConnectionProvider,
 	queueRepository repository.QueueRepository,
 ) QueueService {
 	return &queueService{
@@ -30,7 +28,7 @@ func (c *queueService) Push(ctx context.Context, key string, members ...any) err
 	return c.queueRepository.Enqueue(ctx, key, members...)
 }
 
-func (c *queueService) Pop(ctx context.Context, key string, count int) ([]string, error) {
+func (c *queueService) Pop(ctx context.Context, key string, count int64) ([]string, error) {
 	return c.queueRepository.Dequeue(ctx, key, count)
 }
 

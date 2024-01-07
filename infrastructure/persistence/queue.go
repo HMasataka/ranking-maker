@@ -28,10 +28,11 @@ func (s *queueRepository) Enqueue(ctx context.Context, key string, members ...an
 	return writer.LPush(ctx, s.getKey(key), members...).Err()
 }
 
-func (s *queueRepository) Dequeue(ctx context.Context, key string, count int) ([]string, error) {
-	_, writer := s.clientProvider.CurrentClient(ctx)
+func (s *queueRepository) Dequeue(ctx context.Context, key string, count int64) ([]string, error) {
+	// FIXME writerに変更
+	reader, _ := s.clientProvider.CurrentClient(ctx)
 
-	return writer.RPopCount(ctx, s.getKey(key), count).Result()
+	return reader.RPopCount(ctx, s.getKey(key), int(count)).Result()
 }
 
 func (s *queueRepository) Len(ctx context.Context, key string) (int64, error) {

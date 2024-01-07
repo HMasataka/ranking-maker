@@ -5,6 +5,7 @@ go 1.21.4
 require (
 	github.com/HMasataka/config v0.0.0-20240103051217-65241c442b99
 	github.com/HMasataka/transactor v0.0.0-20230806042857-d9f08aaf8d62
+	github.com/goccy/go-json v0.10.2
 	github.com/google/wire v0.5.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/redis/go-redis/v9 v9.0.2
