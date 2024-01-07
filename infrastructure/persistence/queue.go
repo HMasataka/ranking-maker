@@ -29,10 +29,16 @@ func (s *queueRepository) Enqueue(ctx context.Context, key string, members ...an
 }
 
 func (s *queueRepository) Dequeue(ctx context.Context, key string, count int64) ([]string, error) {
-	// FIXME writerに変更
 	reader, _ := s.clientProvider.CurrentClient(ctx)
 
+	// transactionから利用する際はpopしようとしてもまとめてreadが実行されるため利用不可
 	return reader.RPopCount(ctx, s.getKey(key), int(count)).Result()
+}
+
+func (s *queueRepository) Get(ctx context.Context, key string, start, stop int64) ([]string, error) {
+	reader, _ := s.clientProvider.CurrentClient(ctx)
+
+	return reader.LRange(ctx, s.getKey(key), start, stop).Result()
 }
 
 func (s *queueRepository) Len(ctx context.Context, key string) (int64, error) {

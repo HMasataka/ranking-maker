@@ -47,7 +47,7 @@ func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time
 		}
 
 		// TODO queueLength が大きすぎる場合は分割して一部読み込み
-		targets, err := a.queueService.Pop(ctx, key, queueLength)
+		targets, err := a.queueService.Get(ctx, key, 0, queueLength)
 		if err != nil {
 			return err
 		}
@@ -67,6 +67,10 @@ func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time
 			if err := a.rankService.Add(ctx, key, float64(score), &item); err != nil {
 				return err
 			}
+		}
+
+		if err := a.queueService.Delete(ctx, key, queueLength); err != nil {
+			return err
 		}
 
 		if err := a.queueService.Push(ctx, key, stringToAny(targets)...); err != nil {
