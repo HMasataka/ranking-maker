@@ -59,7 +59,7 @@ func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time
 				return err
 			}
 
-			score, err := a.scoreService.Count(ctx, key, duration)
+			score, err := a.scoreService.Count(ctx, item.ID, duration)
 			if err != nil {
 				return err
 			}
