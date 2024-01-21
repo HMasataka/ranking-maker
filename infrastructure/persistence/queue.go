@@ -25,20 +25,20 @@ func (s *queueRepository) getKey(key string) string {
 func (s *queueRepository) Enqueue(ctx context.Context, key string, members ...any) error {
 	_, writer := s.clientProvider.CurrentClient(ctx)
 
-	return writer.LPush(ctx, s.getKey(key), members...).Err()
+	return writer.RPush(ctx, s.getKey(key), members...).Err()
 }
 
 func (s *queueRepository) EnqueueOne(ctx context.Context, key string, member any) error {
 	_, writer := s.clientProvider.CurrentClient(ctx)
 
-	return writer.LPush(ctx, s.getKey(key), member).Err()
+	return writer.RPush(ctx, s.getKey(key), member).Err()
 }
 
 func (s *queueRepository) Dequeue(ctx context.Context, key string, count int64) ([]string, error) {
 	reader, _ := s.clientProvider.CurrentClient(ctx)
 
 	// transactionから利用する際はpopしようとしてもトランザクション終了時にreadが実行されるためデータの利用不可
-	return reader.RPopCount(ctx, s.getKey(key), int(count)).Result()
+	return reader.LPopCount(ctx, s.getKey(key), int(count)).Result()
 }
 
 func (s *queueRepository) Get(ctx context.Context, key string, start, stop int64) ([]string, error) {
