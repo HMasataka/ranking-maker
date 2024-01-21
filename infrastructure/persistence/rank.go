@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/HMasataka/ranking-maker/domain/entity"
 	"github.com/HMasataka/ranking-maker/domain/repository"
 	tx "github.com/HMasataka/transactor/redis"
 	"github.com/redis/go-redis/v9"
@@ -36,4 +37,26 @@ func (s *rankRepository) Range(ctx context.Context, key string, min, max int64) 
 	reader, _ := s.clientProvider.CurrentClient(ctx)
 
 	return reader.ZRangeWithScores(ctx, s.getKey(key), min, max).Result()
+}
+
+func (s *rankRepository) Rank(ctx context.Context, key string, item *entity.Item) (int64, error) {
+	reader, _ := s.clientProvider.CurrentClient(ctx)
+
+	serialized, err := item.MarshalBinary()
+	if err != nil {
+		return 0, err
+	}
+
+	return reader.ZRank(ctx, s.getKey(key), string(serialized)).Result()
+}
+
+func (s *rankRepository) RevRank(ctx context.Context, key string, item *entity.Item) (int64, error) {
+	reader, _ := s.clientProvider.CurrentClient(ctx)
+
+	serialized, err := item.MarshalBinary()
+	if err != nil {
+		return 0, err
+	}
+
+	return reader.ZRevRank(ctx, s.getKey(key), string(serialized)).Result()
 }

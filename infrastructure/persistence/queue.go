@@ -31,7 +31,7 @@ func (s *queueRepository) Enqueue(ctx context.Context, key string, members ...an
 func (s *queueRepository) Dequeue(ctx context.Context, key string, count int64) ([]string, error) {
 	reader, _ := s.clientProvider.CurrentClient(ctx)
 
-	// transactionから利用する際はpopしようとしてもまとめてreadが実行されるため利用不可
+	// transactionから利用する際はpopしようとしてもトランザクション終了時にreadが実行されるためデータの利用不可
 	return reader.RPopCount(ctx, s.getKey(key), int(count)).Result()
 }
 
