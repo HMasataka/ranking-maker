@@ -36,7 +36,7 @@ func (s *rankRepository) Add(ctx context.Context, key string, score float64, mem
 func (s *rankRepository) Range(ctx context.Context, key string, min, max int64) ([]redis.Z, error) {
 	reader, _ := s.clientProvider.CurrentClient(ctx)
 
-	return reader.ZRangeWithScores(ctx, s.getKey(key), min, max).Result()
+	return reader.ZRevRangeWithScores(ctx, s.getKey(key), min, max).Result()
 }
 
 func (s *rankRepository) Rank(ctx context.Context, key string, item *entity.Item) (int64, error) {
