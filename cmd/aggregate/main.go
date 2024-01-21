@@ -40,7 +40,7 @@ func main() {
 
 	usecase := di.InitializeAggregateUseCase(cfg)
 
-	if err := usecase.Execute(ctx, args.Key, time.Duration(args.Duration)); err != nil {
+	if err := usecase.Execute(ctx, args.Key, time.Duration(args.Duration)*time.Second); err != nil {
 		log.Fatal().Err(err).Send()
 	}
 }
