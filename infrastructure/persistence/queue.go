@@ -25,7 +25,13 @@ func (s *queueRepository) getKey(key string) string {
 func (s *queueRepository) Enqueue(ctx context.Context, key string, members ...any) error {
 	_, writer := s.clientProvider.CurrentClient(ctx)
 
-	return writer.RPush(ctx, s.getKey(key), members...).Err()
+	return writer.LPush(ctx, s.getKey(key), members...).Err()
+}
+
+func (s *queueRepository) EnqueueOne(ctx context.Context, key string, member any) error {
+	_, writer := s.clientProvider.CurrentClient(ctx)
+
+	return writer.LPush(ctx, s.getKey(key), member).Err()
 }
 
 func (s *queueRepository) Dequeue(ctx context.Context, key string, count int64) ([]string, error) {

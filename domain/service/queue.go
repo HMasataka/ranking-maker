@@ -8,6 +8,7 @@ import (
 
 type QueueService interface {
 	Push(ctx context.Context, key string, members ...any) error
+	PushOne(ctx context.Context, key string, member any) error
 	Get(ctx context.Context, key string, start, stop int64) ([]string, error)
 	Delete(ctx context.Context, key string, count int64) error
 	Pop(ctx context.Context, key string, count int64) ([]string, error)
@@ -28,6 +29,10 @@ func NewQueueService(
 
 func (c *queueService) Push(ctx context.Context, key string, members ...any) error {
 	return c.queueRepository.Enqueue(ctx, key, members...)
+}
+
+func (c *queueService) PushOne(ctx context.Context, key string, member any) error {
+	return c.queueRepository.EnqueueOne(ctx, key, member)
 }
 
 func (c *queueService) Get(ctx context.Context, key string, start, stop int64) ([]string, error) {
