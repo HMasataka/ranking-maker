@@ -50,13 +50,15 @@ func init() {
 }
 
 func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time.Duration) error {
-	log.Info().Time("start time", time.Now()).Send()
+	log.Info().Time("start time", time.Now().In(jst)).Send()
 
 	if err := a.transactor.Required(ctx, func(ctx context.Context) error {
 		queueLength, err := a.queueService.Len(ctx, key)
 		if err != nil {
 			return err
 		}
+
+		log.Info().Int64("queue length", queueLength).Send()
 
 		if queueLength == 0 {
 			return nil
