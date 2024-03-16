@@ -8,6 +8,7 @@ import (
 	"github.com/HMasataka/ranking-maker/domain/service"
 	"github.com/HMasataka/transactor"
 	"github.com/goccy/go-json"
+	"github.com/rs/zerolog/log"
 )
 
 type AggregateUseCase interface {
@@ -36,7 +37,9 @@ func NewAggregateUseCase(
 }
 
 func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time.Duration) error {
-	return a.transactor.Required(ctx, func(ctx context.Context) error {
+	log.Info().Time("start time", time.Now()).Send()
+
+	if err := a.transactor.Required(ctx, func(ctx context.Context) error {
 		queueLength, err := a.queueService.Len(ctx, key)
 		if err != nil {
 			return err
@@ -78,7 +81,13 @@ func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time
 		}
 
 		return nil
-	})
+	}); err != nil {
+		return err
+	}
+
+	log.Info().Time("end time", time.Now()).Send()
+
+	return nil
 }
 
 func stringToAny(v []string) []any {
