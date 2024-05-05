@@ -89,13 +89,19 @@ func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time
 
 			log.Debug().Str("item id", item.ID).Int64("score", score).Send()
 
+			if isToReject(score, &item) {
+				if err := a.rankService.Add(ctx, key, 0, &item); err != nil {
+					return err
+				}
+
+				continue
+			}
+
 			if err := a.rankService.Add(ctx, key, float64(score), &item); err != nil {
 				return err
 			}
 
-			if !isToReject(score, &item) {
-				next = append(next, targets[i])
-			}
+			next = append(next, targets[i])
 		}
 
 		if err := a.queueService.Delete(ctx, key, queueLength); err != nil {
