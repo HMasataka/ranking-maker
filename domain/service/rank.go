@@ -13,6 +13,7 @@ type RankService interface {
 	Range(ctx context.Context, key string, min, max int64) ([]redis.Z, error)
 	Rank(ctx context.Context, key string, item *entity.Item) (int64, error)
 	RevRank(ctx context.Context, key string, item *entity.Item) (int64, error)
+	Delete(ctx context.Context, key string) (int64, error)
 }
 
 type rankService struct {
@@ -41,4 +42,8 @@ func (c *rankService) Rank(ctx context.Context, key string, item *entity.Item) (
 
 func (c *rankService) RevRank(ctx context.Context, key string, item *entity.Item) (int64, error) {
 	return c.rankRepository.RevRank(ctx, key, item)
+}
+
+func (c *rankService) Delete(ctx context.Context, key string) (int64, error) {
+	return c.rankRepository.Delete(ctx, key)
 }

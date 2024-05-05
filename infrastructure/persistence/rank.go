@@ -60,3 +60,9 @@ func (s *rankRepository) RevRank(ctx context.Context, key string, item *entity.I
 
 	return reader.ZRevRank(ctx, s.getKey(key), string(serialized)).Result()
 }
+
+func (s *rankRepository) Delete(ctx context.Context, key string) (int64, error) {
+	_, writer := s.clientProvider.CurrentClient(ctx)
+
+	return writer.Del(ctx, s.getKey(key)).Result()
+}
