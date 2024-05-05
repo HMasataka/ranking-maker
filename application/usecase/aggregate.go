@@ -87,6 +87,8 @@ func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time
 				return err
 			}
 
+			log.Debug().Str("item id", item.ID).Int64("score", score).Send()
+
 			if err := a.rankService.Add(ctx, key, float64(score), &item); err != nil {
 				return err
 			}
