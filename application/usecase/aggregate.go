@@ -129,11 +129,14 @@ func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time
 	return nil
 }
 
-const scoreThreshold = 10
+const (
+	scoreThreshold = 1
+	dayThreshold   = 90
+)
 
 // 投稿日時が古くスコアも一定より低ければqueueから削除
 func isToReject(score int64, item *entity.Item) bool {
-	threshold := time.Now().In(jst).AddDate(0, 0, -7)
+	threshold := time.Now().In(jst).AddDate(0, 0, -dayThreshold)
 
 	if item.CreatedAt.Before(threshold) && score < scoreThreshold {
 		return true
