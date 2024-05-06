@@ -29,7 +29,10 @@ func (r *Item) UnmarshalBinary(data []byte) error {
 		return err
 	}
 
-	r = newItem(&unixItem)
+	item := newItem(&unixItem)
+
+	r.ID = item.ID
+	r.CreatedAt = item.CreatedAt
 
 	return nil
 }
