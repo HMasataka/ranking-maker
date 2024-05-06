@@ -7,7 +7,6 @@ import (
 	"github.com/HMasataka/ranking-maker/domain/entity"
 	"github.com/HMasataka/ranking-maker/domain/service"
 	"github.com/HMasataka/transactor"
-	"github.com/goccy/go-json"
 	"github.com/rs/zerolog/log"
 )
 
@@ -78,7 +77,7 @@ func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time
 		for i := range targets {
 			var item entity.Item
 
-			if err := json.Unmarshal([]byte(targets[i]), &item); err != nil {
+			if err := item.UnmarshalBinary([]byte(targets[i])); err != nil {
 				return err
 			}
 
