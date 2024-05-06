@@ -74,12 +74,20 @@ func (a aggregateUseCase) Execute(ctx context.Context, key string, duration time
 
 		next := make([]string, 0, len(targets))
 
+		seen := make(map[string]struct{})
+
 		for i := range targets {
 			var item entity.Item
 
 			if err := item.UnmarshalBinary([]byte(targets[i])); err != nil {
 				return err
 			}
+
+			if _, found := seen[item.ID]; found {
+				continue
+			}
+
+			seen[item.ID] = struct{}{}
 
 			score, err := a.scoreService.Count(ctx, item.ID, duration)
 			if err != nil {
