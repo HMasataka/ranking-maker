@@ -36,7 +36,40 @@ func (s *rankRepository) Add(ctx context.Context, key string, score float64, mem
 func (s *rankRepository) Range(ctx context.Context, key string, min, max int64) ([]redis.Z, error) {
 	reader, _ := s.clientProvider.CurrentClient(ctx)
 
-	return reader.ZRevRangeWithScores(ctx, s.getKey(key), min, max).Result()
+	return reader.ZRangeWithScores(ctx, s.getKey(key), min, max).Result()
+}
+
+func (s *rankRepository) RemRange(ctx context.Context, key string, min, max int64) (int64, error) {
+	_, writer := s.clientProvider.CurrentClient(ctx)
+
+	return writer.ZRemRangeByRank(ctx, s.getKey(key), min, max).Result()
+}
+
+func (s *rankRepository) RangePop(ctx context.Context, key string, min, max int64) ([]redis.Z, error) {
+	reader, writer := s.clientProvider.CurrentClient(ctx)
+	item, err := reader.ZRangeWithScores(ctx, s.getKey(key), min, max).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := writer.ZRemRangeByRank(ctx, s.getKey(key), min, max).Err(); err != nil {
+		return nil, err
+	}
+
+	return item, nil
+}
+
+func (s *rankRepository) Pop(ctx context.Context, key string) (redis.Z, error) {
+	items, err := s.RangePop(ctx, key, 0, 0)
+	if err != nil {
+		return redis.Z{}, err
+	}
+
+	if len(items) == 0 {
+		return redis.Z{}, nil
+	}
+
+	return items[0], nil
 }
 
 func (s *rankRepository) Rank(ctx context.Context, key string, item *entity.Item) (int64, error) {
